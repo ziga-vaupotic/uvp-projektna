@@ -4,8 +4,16 @@ class Stage:
     """Razred za etape dirke Tour de France."""
 
     def __init__(self, stage_url):
-        # inicializacija etape je podana samo z URL-jem, saj je unikaten.
+        """ inicializacija etape je podana samo z URL-jem, saj je unikaten."""
+        
         self.stage_url = stage_url
+
+    def set_data(self, date, distance, vertical_meters):
+        """Nastavi splošne informacije o etapi."""
+
+        self.date = date
+        self.distance = distance
+        self.vertical_meters = vertical_meters
 
 
 class TourDeFrance:

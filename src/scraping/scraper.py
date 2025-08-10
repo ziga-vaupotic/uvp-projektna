@@ -3,7 +3,7 @@ import requests
 import datetime
 import classes
 
-TDF_URL = "https://www.procyclingstats.com/race/tour-de-france/"
+TDF_URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
 DATA_FOLDER = "../data/"
 
@@ -17,7 +17,7 @@ def general_information_tdf(years = []):
 
     for i in (range(TDF_FIRST_YEAR, tdf_end) if years == [] else years):
 
-        request = requests.get(f"{TDF_URL}{i}")
+        request = requests.get(f"{TDF_URL}race/tour-de-france/{i}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
@@ -25,14 +25,54 @@ def general_information_tdf(years = []):
         else:
             current_tdf = classes.TourDeFrance(i, request.url)
 
-            pattern = r'<tr class=""><td>\d{0,2}/\d{0,2}</td>.*?href="(.*?)".*?</tr>'
-            # samo url za zdaj, več podatkov dobimo na urlju.
-            for match in re.findall(pattern, request.text):                
-                # match je lahko empty, to pomeni, da je rest day!
-                current_tdf.add_stage(classes.Stage(match))
-            
+            for x in find_stages_by_list(request):
+                current_tdf.add_stage(x)
+
             tdfs.append(current_tdf)
 
     return tdfs
 
-print(general_information_tdf([2015,  2024])) 
+
+def find_stages_by_list(request):
+    pattern = r'<tr class=""><td>\d{0,2}/\d{0,2}</td>.*?href="(.*?)".*?</tr>'
+    # samo url za zdaj, več podatkov dobimo na urlju.
+    for match in re.findall(pattern, request.text):                
+        # match je lahko empty, to pomeni, da je rest day!
+        yield match
+        
+
+def stages_tdf(tdf):
+    for i, stage in enumerate(tdf.stages):
+        if(stage.stage_url == ""):
+            print(f"Etapa {stage.stage_url} je rest day! ")
+            continue
+
+        request = requests.get(f"{TDF_URL}{stage.stage_url}")
+
+        if(request.status_code != 200):
+            assert(f"Podatkov o etapi {i + 1} iz leta {tdf.year} ni bilo mogoče pridobiti."
+                f" Statusna koda: {request.status_code}")
+        else:
+
+            ## Splošne informaicje, tj. datum, tip etape, dolžina, višinska razlika
+
+            pattern = (
+                r'<ul class="list keyvalueList lineh16 fs12" >.*?'
+                r'<div class="title ">Date:  </div><div class=" value" >(.*?)</div>.*?'
+                r'<div class="title ">Distance: </div><div class=" value" >(.*?)</div>.*?'
+                r'<div class="title ">Vertical meters: </div><div class=" value" >(.*?)</div>.*?'
+                r'</ul>'
+            )
+
+            data = re.findall(pattern, request.text, re.DOTALL)[0]
+
+            if(len(data) < 3):
+                print(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
+                continue
+            #print(x)  # Izpiše datum etape
+            stage.set_data(data[0], data[1], data[2])
+            #print(f"Stage URL: {stage.stage_url}")
+
+tour = general_information_tdf([2005])[0] 
+
+stages_tdf(tour)
