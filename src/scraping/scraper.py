@@ -2,8 +2,9 @@ import re
 import requests
 import datetime
 import classes
+import loader
 
-TDF_URL = "https://www.procyclingstats.com/"
+URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
 DATA_FOLDER = "../data/"
 
@@ -17,7 +18,7 @@ def general_information_tdf(years = []):
 
     for i in (range(TDF_FIRST_YEAR, tdf_end) if years == [] else years):
 
-        request = requests.get(f"{TDF_URL}race/tour-de-france/{i}")
+        request = loader.request(f"{URL}race/tour-de-france/{i}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
@@ -43,11 +44,12 @@ def find_stages_by_list(request):
 
 def stages_tdf(tdf):
     for i, stage in enumerate(tdf.stages):
+
         if(stage.stage_url == ""):
-            print(f"Etapa {stage.stage_url} je rest day! ")
+            assert(f"Etapa {stage.stage_url} je rest day! ")
             continue
 
-        request = requests.get(f"{TDF_URL}{stage.stage_url}")
+        request = loader.request(f"{URL}{stage.stage_url}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o etapi {i + 1} iz leta {tdf.year} ni bilo mogoče pridobiti."
@@ -67,11 +69,11 @@ def stages_tdf(tdf):
             data = re.findall(pattern, request.text, re.DOTALL)[0]
 
             if(len(data) < 3):
-                print(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
+                assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
                 continue
-            #print(x)  # Izpiše datum etape
+
             stage.set_data(data[0], data[1], data[2])
-            #print(f"Stage URL: {stage.stage_url}")
+
 
 tour = general_information_tdf([2005])[0] 
 
