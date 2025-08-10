@@ -3,6 +3,7 @@
 import re
 import requests
 import os
+import classes
 
 
 class BufferResponse:
@@ -23,15 +24,15 @@ def request(url):
 
     dir_path, buffer_file = match_url[0]
 
-    dir_path = os.path.join(f"data/html/{dir_path}")
+    dir_path = os.path.join(f"{classes.DATA_FOLDER}/html/{dir_path}")
     buffer_file = f"{dir_path}/{buffer_file}.html"
 
 
     if os.path.exists(buffer_file):
-        print(f"Nalagam iz datoteke: {dir_path}")
+        #print(f"Nalagam iz datoteke: {dir_path}")
         return BufferResponse(open(buffer_file, "r", encoding="utf-8").read(), url)
     else:
-        print(f"Shranjujem buffer v: {buffer_file} {dir_path}")
+        #print(f"Shranjujem buffer v: {buffer_file} {dir_path}")
 
         os.makedirs(dir_path, exist_ok=True)
         response = requests.get(url)

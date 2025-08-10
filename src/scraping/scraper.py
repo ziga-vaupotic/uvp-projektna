@@ -6,7 +6,6 @@ import loader
 
 URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
-DATA_FOLDER = "../data/"
 
 
 def general_information_tdf(years = []):
@@ -17,6 +16,8 @@ def general_information_tdf(years = []):
     tdfs = []
 
     for i in (range(TDF_FIRST_YEAR, tdf_end) if years == [] else years):
+
+        print(f"Nalagam glavno datoteko | Tour de france {i}")
 
         request = loader.request(f"{URL}race/tour-de-france/{i}")
 
@@ -45,6 +46,7 @@ def find_stages_by_list(request):
 def stages_tdf(tdf):
     for i, stage in enumerate(tdf.stages):
 
+        print(f"Nalagam etapo {i} | Tour de france {tdf.year}")
         if(stage.stage_url == ""):
             assert(f"Etapa {stage.stage_url} je rest day! ")
             continue
@@ -66,15 +68,17 @@ def stages_tdf(tdf):
                 r'</ul>'
             )
 
-            data = re.findall(pattern, request.text, re.DOTALL)[0]
+            data = re.findall(pattern, request.text, re.DOTALL)
 
-            if(len(data) < 3):
+            if(not data):
                 assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
                 continue
+            
+            stage.set_data(data[0][0], data[0][1], data[0][2])                
 
-            stage.set_data(data[0], data[1], data[2])
 
 
-tour = general_information_tdf([2005])[0] 
+tour = general_information_tdf([2005, 2006, 2007])
 
-stages_tdf(tour)
+for x in tour:
+    stages_tdf(x)

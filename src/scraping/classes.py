@@ -1,11 +1,14 @@
 ### V tej datoteki se nahajaj glavni razred za analizo dirke
 
+DATA_FOLDER = "data/"
+
+
 class Stage:
     """Razred za etape dirke Tour de France."""
 
     def __init__(self, stage_url):
         """ inicializacija etape je podana samo z URL-jem, saj je unikaten."""
-        
+
         self.stage_url = stage_url
 
     def set_data(self, date, distance, vertical_meters):
@@ -29,4 +32,8 @@ class TourDeFrance:
 
     def add_stage(self, stage_url):
         self.stages.append(Stage(stage_url))
+
+    #def save_to_csv(self):
+
+
 
