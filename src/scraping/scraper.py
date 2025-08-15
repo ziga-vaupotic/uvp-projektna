@@ -24,13 +24,14 @@ def general_information_tdf(years = []):
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
                    f" Statusna koda: {request.status_code}")
-        else:
-            current_tdf = classes.TourDeFrance(i, request.url)
+            continue
 
-            for x in find_stages_by_list(request):
-                current_tdf.add_stage(x)
+        current_tdf = classes.TourDeFrance(i, request.url)
 
-            tdfs.append(current_tdf)
+        for x in find_stages_by_list(request):
+            current_tdf.add_stage(x)
+
+        tdfs.append(current_tdf)
 
     return tdfs
 
@@ -56,29 +57,64 @@ def stages_tdf(tdf):
         if(request.status_code != 200):
             assert(f"Podatkov o etapi {i + 1} iz leta {tdf.year} ni bilo mogoče pridobiti."
                 f" Statusna koda: {request.status_code}")
-        else:
+            continue
 
-            ## Splošne informaicje, tj. datum, tip etape, dolžina, višinska razlika
+        ## Splošne informaicje, tj. datum, tip etape, dolžina, višinska razlika
 
-            pattern = (
-                r'<ul class="list keyvalueList lineh16 fs12" >.*?'
-                r'<div class="title ">Date:  </div><div class=" value" >(.*?)</div>.*?'
-                r'<div class="title ">Distance: </div><div class=" value" >(.*?)</div>.*?'
-                r'<div class="title ">Vertical meters: </div><div class=" value" >(.*?)</div>.*?'
-                r'</ul>'
-            )
+        pattern = (
+            r'<ul class="list keyvalueList lineh16 fs12" >.*?'
+            r'<div class="title ">Date:  </div><div class=" value" >(.*?)</div>.*?'
+            r'<div class="title ">Distance: </div><div class=" value" >(\d+\.?\d+).*?</div>.*?'
+            r'<div class="title ">Vertical meters: </div><div class=" value" >(\d+\.?\d+).*?</div>.*?'
+            r'</ul>'
+        )
 
-            data = re.findall(pattern, request.text, re.DOTALL)
+        data = re.findall(pattern, request.text, re.DOTALL)
 
-            if(not data):
-                assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
-                continue
-            
-            stage.set_data(data[0][0], data[0][1], data[0][2])                
+        print(data)
 
 
+        if(not data):
+            assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
+            continue
+        
+        stage.set_data(data[0][0], data[0][1], data[0][2])  
 
-tour = general_information_tdf([2005, 2006, 2007])
+        ## Za vsako etapo imamo različne seštevke. Skozi leta so se te seštevki spreminjali,
+        ##  zato jih je treba najprej klasificirati.
+        
+
+        for x in find_gcs(request):
+            find_leaderboard_stage(x[0])
+
+
+        #    tdf.add_gcs(x)
+
+        #for gc in tdf.gcs:
+        #    print(gc)
+        #    find_leaderboard_stage(gc[0])
+
+def find_gcs(request):
+    #(^[A-Z]+$)
+    pattern_sestevki = (
+        r'<a class="selectResultTab" data-id=".*?" data-stagetype="\d{1}" href="(.*?)">.*?</center>(.*?)</a>.*?'
+    )
+
+    data_sestevki = re.findall(pattern_sestevki, request.text, re.DOTALL)
+
+    return data_sestevki
+
+
+def find_leaderboard_stage(url_gc):
+    request = loader.request(f"{URL}{url_gc}")
+
+    pattern_time = (
+        r'<tr>.*?</tr>'
+)
+
+
+
+tour = general_information_tdf([2025])
 
 for x in tour:
     stages_tdf(x)

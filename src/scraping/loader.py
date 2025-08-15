@@ -15,6 +15,10 @@ class BufferResponse:
         self.url = url
 
 def request(url):
+
+    if classes.SAVE_HTMLS == False:
+        return requests.get(url)
+
     """Pošlje GET request na podani URL in vrne odgovor."""
 
     match_url = re.findall(r"procyclingstats.com/(.*)/(.*)", url)
@@ -33,7 +37,6 @@ def request(url):
         return BufferResponse(open(buffer_file, "r", encoding="utf-8").read(), url)
     else:
         #print(f"Shranjujem buffer v: {buffer_file} {dir_path}")
-
         os.makedirs(dir_path, exist_ok=True)
         response = requests.get(url)
         with open(buffer_file, "w", encoding="utf-8") as f:
