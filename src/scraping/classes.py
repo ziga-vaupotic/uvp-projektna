@@ -22,7 +22,6 @@ class Stage:
         self.date = date
         self.distance = distance
         self.vertical_meters = vertical_meters
-        self.climbs = []
 
     def add_climb(self, climb):
         self.climbs.append(climb)
@@ -32,14 +31,16 @@ class Stage:
 class Climb:
     """Razred za vzpon."""
 
-    def __init__(self, length, steepness, top, finish):
+    def __init__(self, id, name, length, steepness, top, finish):
 
+        self.id = id
+        self.name = name
         self.length = length
         self.steepness = steepness
         self.top = top
         self.finish = finish
 
-        pass
+
 
 
 class Cyclist:
@@ -57,7 +58,8 @@ class Race:
         self.url = url
         self.stages = [] # seznam vseh etap dirke
         self.gcs = []
-
+        self.climbs = []
+        
     def __repr__(self):
         return f"Tour de France {self.year} ({self.url})"
 

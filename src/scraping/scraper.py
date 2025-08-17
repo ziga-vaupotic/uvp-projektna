@@ -28,9 +28,9 @@ def general_race_information(years = []):
 
         current_tdf = classes.Race(i, request.url)
 
-        for x in find_stages_by_list(request):
-            current_tdf.add_stage(x)
-
+        #for x in find_stages_by_list(request):
+        #    current_tdf.add_stage(x)
+        current_tdf.climbs = find_climbs(current_tdf)
         tdfs.append(current_tdf)
 
     return tdfs
@@ -42,7 +42,40 @@ def find_stages_by_list(request):
     for match in re.findall(pattern, request.text):                
         # match je lahko empty, to pomeni, da je rest day!
         yield match
-        
+
+
+def find_climbs(race) -> list:
+
+    request = loader.request(f"{URL}race/tour-de-france/{race.year}/route/climbs")
+
+    if(request.status_code != 200):
+        assert(f"Podatkov o vzponih dirke iz leta {race.year} ni bilo mogoče pridobiti."
+                f" Statusna koda: {request.status_code}")
+        return None
+
+    pattern_table = r'<h4>Longest</h4><table[^>]*>(.*?)</table>'
+
+    table_match = re.search(pattern_table, request.text, re.DOTALL)
+
+    if not table_match:
+        assert(f"Tabele ni bilo možno najti!")
+        return None
+
+    table_buffer = table_match.group(1)
+    #print(table_buffer)
+    pattern_table_row = re.compile(
+        r'<tr[^>]+><td>(\d+)</td><td><a  href="([^<]*)">([^<]*)</a></td>'
+        r'<td>(\d+(?:\.\d+)?)</td><td>(\d+(?:\.\d+)?)</td><td>(\d+)</td><td>(-?\d+)</td>.*?</tr>'
+    , re.DOTALL)
+
+    rows = pattern_table_row.findall(table_buffer)
+
+    return_list = []
+
+    for row in rows:
+        return_list.append(classes.Climb(row[1], row[2], row[3], row[4], row[5], row[6]))
+
+    return return_list
 
 def stages_tdf(tdf):
     for i, stage in enumerate(tdf.stages):
@@ -64,12 +97,12 @@ def stages_tdf(tdf):
         pattern = (
             r'<ul class="list keyvalueList lineh16 fs12" >.*?'
             r'<div class="title ">Date:  </div><div class=" value" >(.*?)</div>.*?'
-            r'<div class="title ">Distance: </div><div class=" value" >(\d+\.?\d+).*?</div>.*?'
-            r'<div class="title ">Vertical meters: </div><div class=" value" >(\d+\.?\d+).*?</div>.*?'
+            r'<div class="title ">Distance: </div><div class=" value" >(\d+(?:\.\d+)?).*?</div>.*?'
+            r'<div class="title ">Vertical meters: </div><div class=" value" >(\d+(?:\.\d+)?).*?</div>.*?'
             r'</ul>'
         )
 
-        data = re.findall(pattern, request.text, re.DOTALL)
+        data = re.find(pattern, request.text, re.DOTALL)
 
         print(data)
 
@@ -78,7 +111,7 @@ def stages_tdf(tdf):
             assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
             continue
         
-        stage.set_data(data[0][0], data[0][1], data[0][2])  
+        stage.set_data(data.group(1), data.group(2), data.group(3))  
 
         ## Za vsako etapo imamo različne seštevke. Skozi leta so se te seštevki spreminjali,
         ##  zato jih je treba najprej klasificirati.
