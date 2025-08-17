@@ -6,14 +6,6 @@ import os
 import classes
 
 
-class BufferResponse:
-    """ To je wrapper za request razred. Omogoče nalaganje iz datotek """
-
-    def __init__(self, text, url):
-        self.text = text
-        self.status_code = 200
-        self.url = url
-
 def request(url):
 
     if classes.SAVE_HTMLS == False:
@@ -33,8 +25,17 @@ def request(url):
 
 
     if os.path.exists(buffer_file):
-        #print(f"Nalagam iz datoteke: {dir_path}")
-        return BufferResponse(open(buffer_file, "r", encoding="utf-8").read(), url)
+
+        # Mimika requests response za datoteko, ki je že na računalniku
+
+        response = requests.Response()
+
+        response._content = open(buffer_file, "rb").read()
+        response.encoding ="utf-8"
+        response.url = url
+        response.status_code = 200
+
+        return response
     else:
         #print(f"Shranjujem buffer v: {buffer_file} {dir_path}")
         os.makedirs(dir_path, exist_ok=True)

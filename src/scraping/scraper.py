@@ -8,7 +8,7 @@ URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
 
 
-def general_information_tdf(years = []):
+def general_race_information(years = []):
     # funkcija vrne vse obstoječe podatke od dirkah
 
     tdf_end = datetime.datetime.now().year #leto konca
@@ -26,7 +26,7 @@ def general_information_tdf(years = []):
                    f" Statusna koda: {request.status_code}")
             continue
 
-        current_tdf = classes.TourDeFrance(i, request.url)
+        current_tdf = classes.Race(i, request.url)
 
         for x in find_stages_by_list(request):
             current_tdf.add_stage(x)
@@ -85,8 +85,9 @@ def stages_tdf(tdf):
         
 
         for x in find_gcs(request):
-            find_leaderboard_stage(x[0])
+            find_leaderboard_stage(request, x[0])
 
+        pass
 
         #    tdf.add_gcs(x)
 
@@ -95,26 +96,53 @@ def stages_tdf(tdf):
         #    find_leaderboard_stage(gc[0])
 
 def find_gcs(request):
+    # The function returns a tuple (data_id, gc_type, url_get_request, 'gc name')
     #(^[A-Z]+$)
     pattern_sestevki = (
-        r'<a class="selectResultTab" data-id=".*?" data-stagetype="\d{1}" href="(.*?)">.*?</center>(.*?)</a>.*?'
+        r'<a class="selectResultTab" data-id="(\d+)" data-stagetype="(\d{1})" href="(.*?)">.*?</center>(.*?)</a>.*?'
     )
 
     data_sestevki = re.findall(pattern_sestevki, request.text, re.DOTALL)
 
+    #print(data_sestevki)
+
     return data_sestevki
 
 
-def find_leaderboard_stage(url_gc):
-    request = loader.request(f"{URL}{url_gc}")
+def find_leaderboard_stage(request: requests.Request, data_id: int ):
 
-    pattern_time = (
-        r'<tr>.*?</tr>'
-)
+    #print(data_id)
+    pattern_table = (
+        rF'<div id="resultsCont"><div class=".*?" data-id="{data_id}".*?'
+        r'</div></div>'
+    )
+
+    table = (re.findall(pattern_table, request.text, re.DOTALL))
+
+    if (table == []):
+        assert(f"Tabela za {data_id} ni na voljo!")
+        return None
+
+
+    pattern_table_quary  = (
+        r'<td class="ridername ">.*?'
+        r'<a data-ct=".*?" href="(.?*)">.*?'
+        r'</td>>'
+    )
+
+    table_enteries = (re.findall(pattern_table, request.text, re.DOTALL))
+
+    #request = loader.request(f"{URL}{url_gc}")
+
+    #pattern_time = (
+    #    r'<tr>.*?</tr>'
+#)
+    pass
 
 
 
-tour = general_information_tdf([2025])
+tour = general_race_information([2025])
 
 for x in tour:
+    print(x)
     stages_tdf(x)
