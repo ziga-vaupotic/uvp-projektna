@@ -178,10 +178,10 @@ def find_leaderboard_stage(request: requests.Request, data_id: int ):
 
 
 giro = general_race_information(range(2000, 2026), "giro-d-italia")
-tdf = general_race_information(range(2000, 2026), "giro-d-italia")
-
+vuelta = general_race_information(range(2000, 2026), "vuelta-a-espana")
+tdf  = general_race_information(range(2000, 2026), "tour-de-france")
 #for x in tour:
 #    print(x)
 #    stages_tdf(x)
 
-export.export_climbs(tour, "tdf")
+export.export_climbs(tdf + vuelta + giro, "tdf")

@@ -14,7 +14,7 @@ axes.grid: True
 axes.grid.axis: both                
 axes.grid.which: major              
 grid.linestyle: solid      
-grid.linewidth: 1.5        
+grid.linewidth: 1.2        
 grid.alpha:     0.7         
 axes.edgecolor: black       
 axes.linewidth: 1.5        
