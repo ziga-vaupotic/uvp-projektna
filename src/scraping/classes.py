@@ -40,6 +40,13 @@ class Climb:
         self.top = top
         self.finish = finish
 
+    def to_map(self):
+        return {"Name": self.name, "Length": self.length, 
+                "Steepness": self.steepness, "Vertical": self.top}
+    
+    @staticmethod
+    def get_keys():
+        return ["Name", "Length", "Steepness", "Vertical"]
 
 
 
@@ -51,17 +58,19 @@ class Cyclist:
 
 
 class Race:
-    """Razred za posamezen Tour de France."""
+    """Razred za posamezeno Dirko."""
 
-    def __init__(self, year, url):
+    def __init__(self, year, url, name):
         self.year = year
         self.url = url
         self.stages = [] # seznam vseh etap dirke
         self.gcs = []
         self.climbs = []
+        self.name = name
+        self.type = ""
         
     def __repr__(self):
-        return f"Tour de France {self.year} ({self.url})"
+        return f"Dirka {self.type} {self.year} ({self.url})"
 
     def add_stage(self, stage_url) -> None:
         self.stages.append(Stage(stage_url))

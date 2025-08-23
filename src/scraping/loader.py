@@ -13,12 +13,15 @@ def request(url):
 
     """Pošlje GET request na podani URL in vrne odgovor."""
 
-    match_url = re.findall(r"procyclingstats.com/(.*)/(.*)", url)
+    match_url = re.search(r"procyclingstats.com/(.*)/(.*)", url)
 
     if(not match_url):
         assert("URL mora biti v obliki procyclingstats.com/...")
 
-    dir_path, buffer_file = match_url[0]
+    try:
+        dir_path, buffer_file = [match_url.group(1), match_url.group(2)]
+    except:
+        print(f"Prišlo je do napake pri pregledovanju URL! {url}")
 
     dir_path = os.path.join(f"{classes.DATA_FOLDER}/html/{dir_path}")
     buffer_file = f"{dir_path}/{buffer_file}.html"

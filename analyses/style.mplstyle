@@ -1,0 +1,54 @@
+# Stil za plote
+
+# Line and marker settings
+lines.linewidth: 2             
+lines.marker: o                
+lines.markersize: 8            
+lines.markerfacecolor: none            
+lines.markeredgewidth: 2       
+
+# Axes settings
+axes.labelsize: 14             
+axes.titlesize: 16             
+axes.grid: True                
+axes.grid.axis: both                
+axes.grid.which: major              
+grid.linestyle: solid      
+grid.linewidth: 1.5        
+grid.alpha:     0.7         
+axes.edgecolor: black       
+axes.linewidth: 1.5        
+
+# Ticks settings
+xtick.direction: in            
+ytick.direction: in
+xtick.top: True                
+ytick.right: True              
+xtick.labelsize: 12            
+ytick.labelsize: 12
+
+# Suptitle settings
+figure.titlesize: 15           
+figure.titleweight: bold       
+
+# Legend settings
+legend.fontsize: 12            
+legend.frameon: True           
+#legend.fontweight: bold
+#legend.loc: upper right        
+legend.borderaxespad: 0.5      
+
+# Figure settings
+figure.figsize: 7, 4           
+figure.dpi: 100                
+#figure.autolayout: True  
+savefig.dpi: 300               
+
+# Font settings
+font.size: 12                  
+font.family: serif            
+font.serif: STIXGeneral        
+
+# Mathtext settings
+mathtext.fontset: cm          
+mathtext.rm: serif            

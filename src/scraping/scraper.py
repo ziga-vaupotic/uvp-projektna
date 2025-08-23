@@ -3,12 +3,13 @@ import requests
 import datetime
 import classes
 import loader
+import export
 
 URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
 
 
-def general_race_information(years = []):
+def general_race_information(years = [], race = ""):
     # funkcija vrne vse obstoječe podatke od dirkah
 
     tdf_end = datetime.datetime.now().year #leto konca
@@ -17,16 +18,16 @@ def general_race_information(years = []):
 
     for i in (range(TDF_FIRST_YEAR, tdf_end) if years == [] else years):
 
-        print(f"Nalagam glavno datoteko | Tour de france {i}")
+        print(f"Nalagam glavno datoteko | {race} {i}")
 
-        request = loader.request(f"{URL}race/tour-de-france/{i}")
+        request = loader.request(f"{URL}race/{race}/{i}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
                    f" Statusna koda: {request.status_code}")
             continue
 
-        current_tdf = classes.Race(i, request.url)
+        current_tdf = classes.Race(i, request.url, race)
 
         #for x in find_stages_by_list(request):
         #    current_tdf.add_stage(x)
@@ -46,7 +47,7 @@ def find_stages_by_list(request):
 
 def find_climbs(race) -> list:
 
-    request = loader.request(f"{URL}race/tour-de-france/{race.year}/route/climbs")
+    request = loader.request(f"{race.url}/route/climbs")
 
     if(request.status_code != 200):
         assert(f"Podatkov o vzponih dirke iz leta {race.year} ni bilo mogoče pridobiti."
@@ -80,7 +81,7 @@ def find_climbs(race) -> list:
 def stages_tdf(tdf):
     for i, stage in enumerate(tdf.stages):
 
-        print(f"Nalagam etapo {i} | Tour de france {tdf.year}")
+        print(f"Nalagam etapo {i} | {tdf.name} {tdf.year}")
         if(stage.stage_url == ""):
             assert(f"Etapa {stage.stage_url} je rest day! ")
             continue
@@ -173,9 +174,14 @@ def find_leaderboard_stage(request: requests.Request, data_id: int ):
     pass
 
 
+# giro-d-italia, tour-de-france, vuelta-a-espana
 
-tour = general_race_information([2025])
 
-for x in tour:
-    print(x)
-    stages_tdf(x)
+giro = general_race_information(range(2000, 2026), "giro-d-italia")
+tdf = general_race_information(range(2000, 2026), "giro-d-italia")
+
+#for x in tour:
+#    print(x)
+#    stages_tdf(x)
+
+export.export_climbs(tour, "tdf")
