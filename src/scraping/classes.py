@@ -12,7 +12,7 @@ class Stage:
 
 
     def __init__(self, stage_url):
-        """ inicializacija etape je podana samo z URL-jem, saj je unikaten."""
+        """ Inicializacija etape je podana samo z URL-jem, saj je unikaten."""
 
         self.stage_url = stage_url
 
@@ -51,7 +51,7 @@ class Climb:
 
 
 class Cyclist:
-
+    """ Razred za kolesarja. """
     def  __init__(self, id):
         self.id = id
         pass
