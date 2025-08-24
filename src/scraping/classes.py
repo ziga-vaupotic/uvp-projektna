@@ -4,6 +4,19 @@ from enum import Enum
 
 DATA_FOLDER = "data/"
 SAVE_HTMLS = True
+URL = "https://www.procyclingstats.com/"
+
+
+## Vzeto iz https://www.procyclingstats.com/info/profile-score-explained
+
+class StageType(Enum):
+    RESTDAY = -1
+    NONE = 0
+    FLAT = 1
+    HILLSFLATFINISH = 2
+    HILLSUPHILLFINISH = 3
+    MOUNTAINSFLATFINISH = 4
+    MOUNTAINSUPHILLFINISH = 5
 
 
 
@@ -15,17 +28,28 @@ class Stage:
         """ Inicializacija etape je podana samo z URL-jem, saj je unikaten."""
 
         self.stage_url = stage_url
+        self.set_data()
 
-    def set_data(self, date, distance, vertical_meters):
+    def set_data(self, date = -1, distance = -1, average_speed = -1, 
+                 profile_score = -1, vertical_meters = -1, stage_type = -1):
         """Nastavi splošne informacije o etapi."""
 
         self.date = date
         self.distance = distance
+        self.average_speed = average_speed
+        self.profile_score = profile_score
         self.vertical_meters = vertical_meters
+        self.stage_type = stage_type
 
-    def add_climb(self, climb):
-        self.climbs.append(climb)
-
+    def to_map(self):
+        return {"Date": self.date, "Distance": self.distance, 
+                "Average Speed": self.average_speed, "Vertical": self.vertical_meters,
+                "Profile score": self.profile_score, "Stage type": self.stage_type}
+    
+    @staticmethod
+    def get_keys():
+        return ["Date", "Distance", "Average Speed", "Vertical", "Profile score", "Stage type"]
+    
 
 
 class Climb:

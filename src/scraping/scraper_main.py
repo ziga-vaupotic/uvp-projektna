@@ -4,45 +4,38 @@ import datetime
 import classes
 import loader
 import export
+import scraper_stages
 
-URL = "https://www.procyclingstats.com/"
 TDF_FIRST_YEAR = 1903
 
 
-def general_race_information(years = [], race = ""):
+def general_race_information(years, race):
     # funkcija vrne vse obstoječe podatke od dirkah
 
     tdf_end = datetime.datetime.now().year #leto konca
 
     tdfs = []
 
-    for i in (range(TDF_FIRST_YEAR, tdf_end) if years == [] else years):
+    for i in years:
 
         print(f"Nalagam glavno datoteko | {race} {i}")
 
-        request = loader.request(f"{URL}race/{race}/{i}")
+        request = loader.request(f"{classes.URL}race/{race}/{i}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
                    f" Statusna koda: {request.status_code}")
             continue
 
-        current_tdf = classes.Race(i, request.url, race)
+        current_race = classes.Race(i, request.url, race)
 
-        #for x in find_stages_by_list(request):
-        #    current_tdf.add_stage(x)
-        current_tdf.climbs = find_climbs(current_tdf)
-        tdfs.append(current_tdf)
+
+        current_race.climbs = find_climbs(current_race)
+        tdfs.append(current_race)
 
     return tdfs
 
 
-def find_stages_by_list(request):
-    pattern = r'<tr class=""><td>\d{0,2}/\d{0,2}</td>.*?href="(.*?)".*?</tr>'
-    # samo url za zdaj, več podatkov dobimo na urlju.
-    for match in re.findall(pattern, request.text):                
-        # match je lahko empty, to pomeni, da je rest day!
-        yield match
 
 
 def find_climbs(race) -> list:
@@ -82,11 +75,24 @@ def find_climbs(race) -> list:
 
 
 
-giro = general_race_information(range(2000, 2026), "giro-d-italia")
-vuelta = general_race_information(range(2000, 2026), "vuelta-a-espana")
-tdf  = general_race_information(range(2000, 2026), "tour-de-france")
+giro = general_race_information(range(1930, 2025), "giro-d-italia")
+vuelta = general_race_information(range(1930, 2025), "vuelta-a-espana")
+tdf  = general_race_information(range(1930, 2025), "tour-de-france")
+
+list_all = giro + vuelta + tdf
+
+#giro = general_race_information(range(1978, 1979), "giro-d-italia")
+
 #for x in tour:
 #    print(x)
 #    stages_tdf(x)
 
-export.export_climbs(tdf + vuelta + giro, "tdf")
+#export.export_climbs(tdf + vuelta + giro, "tdf")
+
+
+for x in list_all:
+    scraper_stages.get_stages(x)
+    scraper_stages.stages_information_tdf(x)
+
+
+export.export_stages(list_all, "tdf")

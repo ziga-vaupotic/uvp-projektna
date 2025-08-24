@@ -9,7 +9,9 @@ lines.markeredgewidth: 2
 
 # Axes settings
 axes.labelsize: 14             
-axes.titlesize: 16             
+axes.titlesize: 16    
+axes.titleweight: bold       
+
 axes.grid: True                
 axes.grid.axis: both                
 axes.grid.which: major              
