@@ -3,7 +3,7 @@ import os
 import json
 import csv
 
-def export_climbs(list_of_tours, type):
+def export_climbs(list_of_tours):
 
     # splošne informacije o tour de francu sprava zapišemo v json.
 
@@ -26,7 +26,7 @@ def export_climbs(list_of_tours, type):
                 csvwriter.writerow(writable_dict)
 
 
-def export_stages(list_of_tours, type):
+def export_stages(list_of_tours):
 
     # splošne informacije o tour de francu sprava zapišemo v json.
 

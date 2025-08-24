@@ -9,36 +9,34 @@ import scraper_stages
 TDF_FIRST_YEAR = 1903
 
 
-def general_race_information(years, race):
+def general_race_information(years: list, race_name: str) -> list:
     # funkcija vrne vse obstoječe podatke od dirkah
 
-    tdf_end = datetime.datetime.now().year #leto konca
-
-    tdfs = []
+    races = []
 
     for i in years:
 
-        print(f"Nalagam glavno datoteko | {race} {i}")
+        print(f"Nalagam glavno datoteko | {race_name} {i}")
 
-        request = loader.request(f"{classes.URL}race/{race}/{i}")
+        request = loader.request(f"{classes.URL}race/{race_name}/{i}")
 
         if(request.status_code != 200):
             assert(f"Podatkov o dirki iz leta {i} ni bilo mogoče pridobiti."
                    f" Statusna koda: {request.status_code}")
             continue
 
-        current_race = classes.Race(i, request.url, race)
+        current_race = classes.Race(i, request.url, race_name)
 
 
         current_race.climbs = find_climbs(current_race)
-        tdfs.append(current_race)
+        races.append(current_race)
 
-    return tdfs
-
-
+    return races
 
 
-def find_climbs(race) -> list:
+
+
+def find_climbs(race: classes.Race) -> list:
 
     request = loader.request(f"{race.url}/route/climbs")
 
@@ -81,18 +79,12 @@ tdf  = general_race_information(range(1930, 2025), "tour-de-france")
 
 list_all = giro + vuelta + tdf
 
-#giro = general_race_information(range(1978, 1979), "giro-d-italia")
-
-#for x in tour:
-#    print(x)
-#    stages_tdf(x)
-
-#export.export_climbs(tdf + vuelta + giro, "tdf")
-
-
 for x in list_all:
+    find_climbs(x)
     scraper_stages.get_stages(x)
     scraper_stages.stages_information_tdf(x)
 
 
-export.export_stages(list_all, "tdf")
+export.export_climbs(list_all)
+
+export.export_stages(list_all)

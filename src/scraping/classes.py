@@ -30,8 +30,8 @@ class Stage:
         self.stage_url = stage_url
         self.set_data()
 
-    def set_data(self, date = -1, distance = -1, average_speed = -1, 
-                 profile_score = -1, vertical_meters = -1, stage_type = -1):
+    def set_data(self, date: str = -1, distance: int = -1, average_speed: int = -1, 
+                 profile_score: int = -1, vertical_meters: int = -1, stage_type: int = -1):
         """Nastavi splošne informacije o etapi."""
 
         self.date = date
@@ -55,7 +55,8 @@ class Stage:
 class Climb:
     """Razred za vzpon."""
 
-    def __init__(self, id, name, length, steepness, top, finish):
+    def __init__(self, id: str, name: str, length: int,
+                  steepness: int, top: int, finish: int):
 
         self.id = id
         self.name = name
@@ -84,7 +85,7 @@ class Cyclist:
 class Race:
     """Razred za posamezeno Dirko."""
 
-    def __init__(self, year, url, name):
+    def __init__(self, year: int, url: str, name: str):
         self.year = year
         self.url = url
         self.stages = [] # seznam vseh etap dirke
@@ -99,14 +100,6 @@ class Race:
     def add_stage(self, stage_url) -> None:
         self.stages.append(Stage(stage_url))
 
-    def add_gcs(self, gc: tuple[str, str]) -> None:
-
-        if not isinstance(gc, tuple):
-            raise TypeError("Expected tuple")
-
-        self.gcs.append(gc)
-
-    #def save_to_csv(self):
 
 
 

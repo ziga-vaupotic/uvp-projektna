@@ -4,17 +4,16 @@ import datetime
 import classes
 import loader
 import export
+from typing import Iterator
 
-
-
-def get_stages(race):
+def get_stages(race: classes.Race) -> None:
     request = loader.request(race.url)
 
     for x in find_stages_by_list(race, request):
-            print(x)
-            race.add_stage(x)
+        race.add_stage(x)
 
-def find_stages_by_list(race, request):
+def find_stages_by_list(race: classes.Race, request: requests.Request) -> Iterator[str]:
+    # Funkcija poišče vse etape
 
     pattern_table = (
         r'<h4>Stages</h4>.*?<tbody>(.*?)'
@@ -34,10 +33,12 @@ def find_stages_by_list(race, request):
         yield match
 
 
-def stages_information_tdf(tdf):
-    for i, stage in enumerate(tdf.stages):
+def stages_information_tdf(race: list) -> None:
+    # Funckija poišče vse informacije o dirkah
 
-        print(f"Nalagam etapo {i} | {tdf.name} {tdf.year}")
+    for i, stage in enumerate(race.stages):
+
+        print(f"Nalagam etapo {i} | {race.name} {race.year}")
         if(stage.stage_url == ""):
             assert(f"Etapa {stage.stage_url} je rest day! ")
             continue
@@ -45,7 +46,7 @@ def stages_information_tdf(tdf):
         request = loader.request(f"{classes.URL}{stage.stage_url}")
 
         if(request.status_code != 200):
-            assert(f"Podatkov o etapi {i + 1} iz leta {tdf.year} ni bilo mogoče pridobiti."
+            assert(f"Podatkov o etapi {i + 1} iz leta {race.year} ni bilo mogoče pridobiti."
                 f" Statusna koda: {request.status_code}")
             continue
 
@@ -66,44 +67,30 @@ def stages_information_tdf(tdf):
 
         data = re.search(pattern, request.text, re.DOTALL)
 
-        print(data)
-
 
         if(not data):
-            assert(f"Etapa {i + 1} iz leta {tdf.year} nima splošnih informacij!")
+            assert(f"Etapa {i + 1} dirke {race.name} iz leta {race.year} nima splošnih informacij!")
             continue
         
-        try:
-            stage.set_data(data.group(1), data.group(3), data.group(2), data.group(5), data.group(6), data.group(4))  
-        except:
-            pass
-        ## Za vsako etapo imamo različne seštevke. Skozi leta so se te seštevki spreminjali,
-        ##  zato jih je treba najprej klasificirati.
-        
-
-        #for x in find_gcs(request):
-        #    find_leaderboard_stage(request, x[0])
-
-        #pass
+        stage.set_data(data.group(1), data.group(3), data.group(2), data.group(5), data.group(6), data.group(4))  
 
 
-def find_gcs(request):
-    # The function returns a tuple (data_id, gc_type, url_get_request, 'gc name')
-    #(^[A-Z]+$)
+
+def find_gcs(request: requests.Request) -> list:
+    # Funkcije vrne touple (data_id, gc_type, url_get_request, 'gc name')
+
     pattern_sestevki = (
         r'<a class="selectResultTab" data-id="(\d+)" data-stagetype="(\d{1})" href="[^<]*">.*?</center>(.*?)</a>.*?'
     )
 
     data_sestevki = re.findall(pattern_sestevki, request.text, re.DOTALL)
 
-    #print(data_sestevki)
-
     return data_sestevki
 
 
-def find_leaderboard_stage(request: requests.Request, data_id: int ):
+def find_leaderboard_stage(request: requests.Request, data_id: int) -> list:
+    # Funkcija poišče vse seštevke (skupni, gorski, ...)
 
-    #print(data_id)
     pattern_table = (
         rF'<div id="resultsCont"><div class=".*?" data-id="{data_id}".*?'
         r'</div></div>'
@@ -124,9 +111,4 @@ def find_leaderboard_stage(request: requests.Request, data_id: int ):
 
     table_enteries = (re.findall(pattern_table, request.text, re.DOTALL))
 
-    #request = loader.request(f"{URL}{url_gc}")
-
-    #pattern_time = (
-    #    r'<tr>.*?</tr>'
-#)
     pass
