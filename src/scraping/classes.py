@@ -24,11 +24,15 @@ class Stage:
     """Razred za etape dirke Tour de France."""
 
 
-    def __init__(self, stage_url):
+    def __init__(self, stage_num, stage_url):
         """ Inicializacija etape je podana samo z URL-jem, saj je unikaten."""
 
+        self.stage_num = stage_num
         self.stage_url = stage_url
         self.set_data()
+
+    def __str__(self):
+        return str(self.to_map)
 
     def set_data(self, date: str = -1, distance: int = -1, average_speed: int = -1, 
                  profile_score: int = -1, vertical_meters: int = -1, stage_type: int = -1):
@@ -42,6 +46,7 @@ class Stage:
         self.stage_type = stage_type
 
     def to_map(self):
+        # Vrne 
         return {"Date": self.date, "Distance": self.distance, 
                 "Average Speed": self.average_speed, "Vertical": self.vertical_meters,
                 "Profile score": self.profile_score, "Stage type": self.stage_type}
@@ -64,6 +69,9 @@ class Climb:
         self.steepness = steepness
         self.top = top
         self.finish = finish
+
+    def __str__(self):
+        return str(self.to_map())
 
     def to_map(self):
         return {"Name": self.name, "Length": self.length, 
@@ -89,7 +97,6 @@ class Race:
         self.year = year
         self.url = url
         self.stages = [] # seznam vseh etap dirke
-        self.gcs = []
         self.climbs = []
         self.name = name
         self.type = ""
@@ -97,8 +104,8 @@ class Race:
     def __repr__(self):
         return f"Dirka {self.type} {self.year} ({self.url})"
 
-    def add_stage(self, stage_url) -> None:
-        self.stages.append(Stage(stage_url))
+    def add_stage(self, stage: Stage) -> None:
+        self.stages.append(stage)
 
 
 

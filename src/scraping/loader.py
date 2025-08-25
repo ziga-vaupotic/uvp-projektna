@@ -3,12 +3,12 @@
 import re
 import requests
 import os
-import classes
+from .classes import SAVE_HTMLS, DATA_FOLDER
 
 
 def request(url):
 
-    if classes.SAVE_HTMLS == False:
+    if SAVE_HTMLS == False:
         return requests.get(url)
 
     """Pošlje GET request na podani URL in vrne odgovor."""
@@ -23,7 +23,7 @@ def request(url):
     except:
         print(f"Prišlo je do napake pri pregledovanju URL! {url}")
 
-    dir_path = os.path.join(f"{classes.DATA_FOLDER}/html/{dir_path}")
+    dir_path = os.path.join(f"{DATA_FOLDER}/html/{dir_path}")
     buffer_file = f"{dir_path}/{buffer_file}.html"
 
 
