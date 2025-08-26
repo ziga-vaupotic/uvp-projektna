@@ -4,7 +4,7 @@ from src.scraping import find_race, find_climbs, find_stages, find_stage_data, e
 races = []
 
 for race in ["giro-d-italia", "vuelta-a-espana", "tour-de-france"]:
-    for i in range(2000, 2026):
+    for i in range(1906, 2026):
         current = find_race(i, race)
         current.climbs = find_climbs(current)
 

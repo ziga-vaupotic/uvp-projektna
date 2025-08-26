@@ -1,4 +1,5 @@
 Name,Length,Steepness,Vertical,Year,Race
+Monte Bondone,0,0,0,1956,giro-d-italia
 Lodrino,0,0,0,2018,giro-d-italia
 Sestriere,31.8,4,2058,2020,giro-d-italia
 Passo dello Stelvio/Stilfserjoch,24.8,7.4,2746,2020,giro-d-italia
@@ -597,6 +598,8 @@ San Colombano Belmonte,1.5,5.3,531,2025,vuelta-a-espana
 Alto San Lorenzo de El Escorial,1.5,7.1,967,2025,vuelta-a-espana
 San Martín de Oscos,1,8,790,2025,vuelta-a-espana
 Rivara,0.5,4.7,381,2025,vuelta-a-espana
+Le Mourtis,0,0,1409,1979,tour-de-france
+Col du Portillon,0,0,1569,1979,tour-de-france
 Col du Lautaret,0,0,0,2003,tour-de-france
 Col d'Izoard,0,0,0,2003,tour-de-france
 Côte de Saint-Apollinaire,0,0,0,2003,tour-de-france
