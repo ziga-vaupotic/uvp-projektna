@@ -5,7 +5,7 @@ import csv
 
 def export_climbs(list_of_tours) -> bool: 
 
-    # splošne informacije o tour de francu sprava zapišemo v json.
+    # najprej naredimo mape v data/ 
 
     dir_path = os.path.join(f"{DATA_FOLDER}csv/")
     os.makedirs(dir_path, exist_ok=True)
@@ -30,7 +30,7 @@ def export_climbs(list_of_tours) -> bool:
 
 def export_stages(list_of_tours) -> bool:
 
-    # splošne informacije o tour de francu sprava zapišemo v json.
+    # najprej naredimo mape v data/ 
 
     dir_path = os.path.join(f"{DATA_FOLDER}csv/")
     os.makedirs(dir_path, exist_ok=True)

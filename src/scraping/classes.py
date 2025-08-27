@@ -47,13 +47,13 @@ class Stage:
 
     def to_map(self):
         # Vrne 
-        return {"Date": self.date, "Distance": self.distance, 
+        return {"Number": self.stage_num, "Date": self.date, "Distance": self.distance, 
                 "Average Speed": self.average_speed, "Vertical": self.vertical_meters,
                 "Profile score": self.profile_score, "Stage type": self.stage_type}
     
     @staticmethod
     def get_keys():
-        return ["Date", "Distance", "Average Speed", "Vertical", "Profile score", "Stage type"]
+        return ["Number", "Date", "Distance", "Average Speed", "Vertical", "Profile score", "Stage type"]
     
 
 
