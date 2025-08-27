@@ -1,16 +1,19 @@
 from .classes import DATA_FOLDER, Climb, Stage
+
 import os
 import json
 import csv
 
-def export_climbs(list_of_tours) -> bool: 
 
-    # najprej naredimo mape v data/ 
+def export_climbs(list_of_tours) -> bool: 
+    """
+    Funkcija shrani vse vzpone iz seznama dirk v 
+    CSV datoteko, ki se nahaja v data/csv/climbs.csv. 
+    Če datoteke ni jo naredi.
+    """
 
     dir_path = os.path.join(f"{DATA_FOLDER}csv/")
     os.makedirs(dir_path, exist_ok=True)
-
-    print(dir_path)
 
     with open(dir_path + "climbs.csv", "w+", encoding="utf-8") as csvfile:
 
@@ -29,13 +32,14 @@ def export_climbs(list_of_tours) -> bool:
 
 
 def export_stages(list_of_tours) -> bool:
-
-    # najprej naredimo mape v data/ 
+    """ 
+    Funkcija shrani vse etape iz seznama dirk v 
+    CSV datoteko, ki se nahaja v data/csv/stages.csv. 
+    Če datoteke ni jo naredi. 
+    """
 
     dir_path = os.path.join(f"{DATA_FOLDER}csv/")
     os.makedirs(dir_path, exist_ok=True)
-
-    print(dir_path)
 
     with open(dir_path + "stages.csv", "w+", encoding="utf-8") as csvfile:
 

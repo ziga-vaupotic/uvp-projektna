@@ -18,7 +18,10 @@ TABLE_PATTERN = re.compile(
 
 
 def find_race(year: int, race_name: str) -> Race:
-    # funkcija vrne vse obstoječe podatke od dirkah
+    """
+    Funkcija poišče dirko, ki jo poda njen unikaten indeks
+    race_name, nato vrne razred Race.
+    """
 
     print(f"Nalagam glavno datoteko | {race_name} {year}")
 
@@ -33,6 +36,7 @@ def find_race(year: int, race_name: str) -> Race:
 
 
 def find_climbs(race: Race) -> list:
+    """Funckija poišče vse vzpone ne dirki in vrne seznam teh."""
 
     req = request(f"{race.url}/route/climbs")
 
@@ -41,10 +45,12 @@ def find_climbs(race: Race) -> list:
                 f" Statusna koda: {req.status_code}")
         return []
 
+    ## Poišči pravo tabelo
+
     table_match = TABLE_PATTERN.search(req.text)
 
     if not table_match:
-        assert(f"Tabele ni bilo možno najti!")
+        assert f"Tabele ni bilo možno najti!"
         return []
 
     table_buffer = table_match.group(1)

@@ -1,20 +1,25 @@
-import re
-import requests
-import datetime
 from .classes import Race, Stage, URL
 from .loader import request
+
+import re
 from typing import Iterator
 
-
+## Nadje pravilno table za etape. Vrne html tabelo
 STAGE_FIND_TABLE_PATTERN = re.compile(
         r'<h4>Stages</h4>.*?<tbody>(.*?)'
         r'</tbody></table></div>'
         , re.DOTALL )
 
+## V tabeli poišče vse etape dirke. Vrne url etape
 STAGE_TABLE_PATTERN = re.compile(
         r'<tr class=""><td>\d{0,2}/\d{0,2}</td>.*?href="(.*?)".*?</tr>'
         , re.DOTALL )
 
+## Poišče vse seštevke in njihove data indekse.
+GCS_PATTERN = re.compile(
+        r'<a class="selectResultTab" data-id="(\d+)" data-stagetype="(\d{1})" href="[^<]*">.*?'
+        r'</center>(.*?)</a>.*?'
+        ,re.DOTALL)
 
 ## Splošne informaicje, tj. datum, tip etape, dolžina, višinska razlika
 STAGE_INFO_PATTERN = re.compile(
@@ -30,13 +35,15 @@ STAGE_INFO_PATTERN = re.compile(
 
 
 def find_stages(race: Race) -> Iterator[str]:
-    # Funkcija poišče vse etape
+    """ Poišče vse etape na dirki. Funkcija vrača
+    Iterator s pomočjo yield in ne seznama, za lažjo
+    po uporabo. """
 
     req = request(race.url)
 
     table = STAGE_FIND_TABLE_PATTERN.search(req.text)
     if (not table):
-        print(f"Tabela etap {race.name} leta {race.year} ni na voljo!")
+        assert f"Tabela etap {race.name} leta {race.year} ni na voljo!"
         return None
 
     # samo url za zdaj, več podatkov dobimo na urlju.
@@ -46,12 +53,14 @@ def find_stages(race: Race) -> Iterator[str]:
 
 
 def find_stage_data(stage: Stage, race: Race) -> list:
+    """ Poišče podatke o etapi in vrne podatke v obliki seznama. """
+
     # Funckija poišče vse informacije o dirkah
 
     print(f"Nalagam etapo {stage.stage_num} | {race.name} {race.year}")
 
     if(stage.stage_url == ""):
-        assert(f"Etapa {stage.stage_url} je rest day! ")
+        assert f"Etapa {stage.stage_url} je rest day! "
         return []
 
     req = request(f"{URL}{stage.stage_url}")
@@ -72,16 +81,23 @@ def find_stage_data(stage: Stage, race: Race) -> list:
     return list(data.groups())
 
 
-#def find_gcs(request: requests.Request) -> list:
-    # Funkcije vrne touple (data_id, gc_type, url_get_request, 'gc name')
+def find_gcs(stage: Stage) -> list:
+    """
+    Poišče vse skupne seštevke in vrne seznam teh.
+    Seznam je v obliki (data_id, gc_type, url_get_request, 'gc name')
+    """
 
-#    pattern_sestevki = (
-#        r'<a class="selectResultTab" data-id="(\d+)" data-stagetype="(\d{1})" href="[^<]*">.*?</center>(.*?)</a>.*?'
-#    )
+    print(f"Nalagam seštevke za etapo {stage.stage_num}")
 
-#    data_sestevki = re.findall(pattern_sestevki, request.text, re.DOTALL)
+    req = request(f"{URL}{stage.stage_url}")
 
-#    return data_sestevki
+    data = GCS_PATTERN.findall(req.text)
+
+    if(not data):
+        assert(f"Etapa {stage.stage_num} dirke nima seštevkov!")
+        return []
+
+    return data
 
 
 #def find_leaderboard_stage(request: requests.Request, data_id: int) -> list:
