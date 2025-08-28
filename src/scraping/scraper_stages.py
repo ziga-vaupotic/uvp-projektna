@@ -1,4 +1,4 @@
-from .classes import Race, Stage, URL
+from .classes import Race, Stage, Leaderboard, URL
 from .loader import request
 
 import re
@@ -20,6 +20,13 @@ GCS_PATTERN = re.compile(
         r'<a class="selectResultTab" data-id="(\d+)" data-stagetype="(\d{1})" href="[^<]*">.*?'
         r'</center>(.*?)</a>.*?'
         ,re.DOTALL)
+
+# Poišče končni seštevek
+GC_TABLE_PATTERN = re.compile(
+    r'<a data-ct=".*?" href="(.*?)">.*?'
+    r'</td>'
+    , re.DOTALL
+)
 
 ## Splošne informaicje, tj. datum, tip etape, dolžina, višinska razlika
 STAGE_INFO_PATTERN = re.compile(
@@ -59,11 +66,12 @@ def find_stage_data(stage: Stage, race: Race) -> list:
 
     print(f"Nalagam etapo {stage.stage_num} | {race.name} {race.year}")
 
-    if(stage.stage_url == ""):
+    if(not stage.stage_url):
         assert f"Etapa {stage.stage_url} je rest day! "
         return []
 
     req = request(f"{URL}{stage.stage_url}")
+
 
     if(req.status_code != 200):
         assert(f"Podatkov o etapi {stage.stage_num} iz dirke {race.name} {race.year} ni bilo mogoče pridobiti."
@@ -81,45 +89,65 @@ def find_stage_data(stage: Stage, race: Race) -> list:
     return list(data.groups())
 
 
-def find_gcs(stage: Stage) -> list:
+def find_leaderboard_types(stage: Stage) -> list:
     """
     Poišče vse skupne seštevke in vrne seznam teh.
-    Seznam je v obliki (data_id, gc_type, url_get_request, 'gc name')
+    Seznam je vsebuje razrede tipa Leaderboard
     """
 
-    print(f"Nalagam seštevke za etapo {stage.stage_num}")
+    print(f"Iščem seštevke za etapo {stage.stage_num}")
+
+    if(not stage.stage_url):
+        assert f"Etapa {stage.stage_url} je rest day! "
+        return []
 
     req = request(f"{URL}{stage.stage_url}")
 
-    data = GCS_PATTERN.findall(req.text)
+    if(req.status_code != 200):
+            assert(f"Podatkov o etapi {stage.stage_num} ni bilo mogoče pridobiti."
+                f" Statusna koda: {req.status_code}")
+            return []
 
-    if(not data):
+    data_leaderboards = GCS_PATTERN.findall(req.text)
+
+    if(not data_leaderboards):
         assert(f"Etapa {stage.stage_num} dirke nima seštevkov!")
         return []
 
-    return data
+    return [Leaderboard(data[0], data[1], data[2]) 
+            for data in data_leaderboards]
 
 
-#def find_leaderboard_stage(request: requests.Request, data_id: int) -> list:
-    # Funkcija poišče vse seštevke (skupni, gorski, ...)
-
-#    pattern_table = (
-#        rF'<div id="resultsCont"><div class=".*?" data-id="{data_id}".*?'
-#        r'</div></div>'
-#    )
-
-#    table = (re.search(pattern_table, request.text, re.DOTALL))
-
-#    if (table == []):
-#        assert(f"Tabela za {data_id} ni na voljo!")
-#        return None
+def find_leaderboard_stage(stage: Stage, gc_id: int) -> list:
+    """ Poišče kočno lestvico glede na podan indeks lestvice. """
 
 
-#    pattern_table_quary  = (
-#        r'<a data-ct=".*?" href="(.?*)">.*?'
-#        r'</td>>'
-#    )
-#
-#    table_enteries = (re.findall(pattern_table, request.text, re.DOTALL))
-#
-#    pass
+    print(f"Nalagam seštevke za etapo {stage.stage_num}")
+
+    if(not stage.stage_url):
+        assert f"Etapa {stage.stage_url} je rest day! "
+        return []
+
+    req = request(f"{URL}{stage.stage_url}")
+
+    if(req.status_code != 200):
+            assert(f"Podatkov o etapi {stage.stage_num} ni bilo mogoče pridobiti."
+                f" Statusna koda: {req.status_code}")
+            return []
+
+    # tokrat je pattern spremenljiv glede na seštevek
+    # zato ga vedno znova recompilamo!
+    pattern_table = (
+        rF'<div id="resultsCont"><div class=".*?" data-id="{gc_id}".*?'
+        r'</div></div>'
+    )
+
+    table = (re.search(pattern_table, req.text, re.DOTALL))
+
+    if (table == []):
+        assert(f"Tabela za {gc_id} ni na voljo!")
+        return None
+
+    table_enteries = GC_TABLE_PATTERN.findall(req.text)
+
+    return table_enteries

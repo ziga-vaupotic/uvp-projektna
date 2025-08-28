@@ -41,7 +41,7 @@ def find_climbs(race: Race) -> list:
     req = request(f"{race.url}/route/climbs")
 
     if(req.status_code != 200):
-        assert(f"Podatkov o vzponih dirke iz leta {race.year} ni bilo mogoče pridobiti."
+        assert(f"Podatkov o vzponih dirke {race.name} iz leta {race.year} ni bilo mogoče pridobiti."
                 f" Statusna koda: {req.status_code}")
         return []
 
@@ -50,12 +50,16 @@ def find_climbs(race: Race) -> list:
     table_match = TABLE_PATTERN.search(req.text)
 
     if not table_match:
-        assert f"Tabele ni bilo možno najti!"
+        assert f"Tabele vzponov dirke {race.name} iz leta {race.year} ni bilo možno najti!"
         return []
 
     table_buffer = table_match.group(1)
 
     rows = TABLE_PATTERN_ROW.findall(table_buffer)
+
+    if not rows:
+        assert f"Pri tabeli vzponov {race.name} iz leta {race.year} je prišlo do napake!"
+        return []
 
     return [Climb(row[1], row[2], row[3], row[4], row[5], row[6])
              for row in rows]

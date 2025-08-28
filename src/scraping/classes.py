@@ -19,6 +19,28 @@ class StageType(Enum):
     MOUNTAINSUPHILLFINISH = 5
 
 
+class Leaderboard:
+    """Razred za končno lestvico etape."""
+
+    def __init__(self, data_id: int, gc_type: int, gc_name: str = ""):
+        """Inicializacija etape je podana samo z URL-jem, saj je unikaten."""
+
+        self.data_id = data_id
+        self.type = gc_type
+        self.name = gc_name
+        self.leaderboard = []
+
+    def __str__(self):
+        """Vrne niz s parametri lestvice."""
+
+        return str(self.to_map())
+
+    def to_map(self):
+        """Vrne slovar s parametri lestvice."""
+
+        return {"Index": self.data_id, "Type": self.type, "Name": self.name}
+
+
 class Stage:
     """Razred za etape dirke Tour de France."""
 
@@ -44,9 +66,15 @@ class Stage:
         self.profile_score = profile_score
         self.vertical_meters = vertical_meters
         self.stage_type = stage_type
+        self.leaderboards = []
+
+    def add_stage(self, leaderboard: Leaderboard) -> None:
+        """Doda razverstitev na seznam."""
+
+        self.leaderboards.append(Leaderboard)
 
     def to_map(self):
-        """Vrne niz s parametri etape."""
+        """Vrne slovar s parametri etape."""
 
         return {"Number": self.stage_num, "Date": self.date, "Distance": self.distance, 
                 "Average Speed": self.average_speed, "Vertical": self.vertical_meters,
@@ -56,8 +84,7 @@ class Stage:
     def get_keys():
         """Vrne ključe od slovarja to_map()"""
 
-        return ["Number", "Date", "Distance", "Average Speed", "Vertical", "Profile score", "Stage type"]
-    
+        return ["Number", "Date", "Distance", "Average Speed", "Vertical", "Profile score", "Stage type"] 
 
 
 class Climb:
@@ -90,7 +117,6 @@ class Climb:
         """Vrne ključe od slovarja to_map()"""
 
         return ["Name", "Length", "Steepness", "Vertical"]
-
 
 
 class Cyclist:

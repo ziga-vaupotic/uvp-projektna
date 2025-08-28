@@ -1,5 +1,5 @@
-# Analiza etap na trotedenskih kolesarskih dirkah
- Ta projekt je narejen v sklopu projektne naloge za predmet uvod v programiranje (UVP). Ukvarjal sem se z analizo trotedenskih kolesarskih dirk. Podatke, uporabljene v analizi, sem pridobil iz spletne strani [Procyclingstats](https://www.procyclingstats.com/index.php). V ``src/scraping/`` se nahaja izvirna koda za pridobivanje podatkov. Vsa funkcionalnost napisne kode je opisana spodaj.
+# Analiza etap na tritedenskih kolesarskih dirkah
+ Ta projekt je narejen v sklopu projektne naloge za predmet uvod v programiranje (UVP). Ukvarjal sem se z analizo tritedenskih kolesarskih dirk. Podatke, uporabljene v analizi, sem pridobil iz spletne strani [Procyclingstats](https://www.procyclingstats.com/index.php). V ``src/scraping/`` se nahaja izvirna koda za pridobivanje podatkov. Vsa funkcionalnost napisne kode je opisana spodaj.
 
  Analiza podatkov je narejena v jupyter zvezeku (``analysis/analiza-dirk.ipynb``). Vključuje analizo časovnih trendov dirke po Franciji, dirke po Italiji in dirke po Španiji. To so recimo povprečna hitrost, dolžina etap, premagana nadmorska višina, ... Poudarek je na primerjavi vseh treh dirk. Posledično analiziramo tudi vzpone, ki se pojavijo na dirkah.
 

@@ -1,4 +1,5 @@
 from .scraper_main import find_race, find_climbs
-from .scraper_stages import find_stages, find_stage_data
+from .scraper_stages import find_stages, find_stage_data, find_leaderboard_types, find_leaderboard_stage
 
-__all__ = ["find_race", "find_climbs", "find_stages", "find_stage_data"]
+__all__ = ["find_race", "find_climbs", "find_stages", "find_stage_data"
+           "find_leaderboard_types", "find_leaderboard_stage"]
